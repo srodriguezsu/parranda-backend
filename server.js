@@ -18,8 +18,9 @@ app.post('/signup', registro)
 app.get('/recetas', getAll)
 app.get('/recetas/:id', getOne)
 app.post('/recetas', jwtMiddleware, create)
-app.patch('/recetas/:id', jwtMiddleware, update)
+app.put('/recetas/:id', jwtMiddleware, update)
 app.delete('/recetas/:id', jwtMiddleware, deleteOne)
+app.use('/uploads', express.static('uploads'));
 
 
 app.get('/self', jwtMiddleware, (req, res) => {

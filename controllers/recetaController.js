@@ -52,7 +52,6 @@ exports.getOne = async (req, res) => {
     }
 };
 
-// Modificar el método create para manejar la imagen
 exports.create = async (req, res) => {
     try {
         upload.single('imagen')(req, res, async function(err) {
@@ -86,12 +85,45 @@ exports.create = async (req, res) => {
 
 // Editar una receta existente
 exports.update = async (req, res) => {
-    const { id } = req.params;
-    const receta = req.body;
+
     try {
-        const resultado = await recetaService.editarReceta(id, receta);
-        res.json(resultado);
+        upload.single('imagen')(req, res, async function(err) {
+            if (err instanceof multer.MulterError) {
+                return res.status(400).json({ error: 'Error al subir la imagen' });
+            } else if (err) {
+                return res.status(400).json({ error: err.message });
+            }
+
+            const { id } = req.params;
+            const receta = req.body;
+            const autorId = req.user.id;
+
+            // Agregar la ruta de la imagen a la receta si se subió una imagen
+            if (req.file) {
+                receta.imagen = req.file.path;
+            }
+
+            try {
+                const existeReceta = await recetaService.obtenerReceta(id);
+
+                if (existeReceta.imagen_url) {
+                    const fs = require('fs');
+                    fs.unlink(existeReceta.imagen_url, (err) => {
+                        if (err) {
+                            console.error('Error al eliminar la imagen anterior:', err);
+                        }
+                    });
+                }
+
+                const nuevaReceta = await recetaService.editarReceta(id, receta);
+                res.status(201).json(nuevaReceta);
+            } catch (error) {
+                console.error('Error al crear receta:', error);
+                res.status(500).json({ error: 'Error al crear la receta' });
+            }
+        });
     } catch (error) {
+        console.error('Error al procesar la solicitud:', error);
         res.status(404).json({ error: error.message });
     }
 };
@@ -101,6 +133,15 @@ exports.deleteOne = async (req, res) => {
     const { id } = req.params;
 
     try {
+        const existeReceta = await recetaService.obtenerReceta(id);
+        if (existeReceta.imagen_url) {
+            const fs = require('fs');
+            fs.unlink(existeReceta.imagen_url, (err) => {
+                if (err) {
+                    console.error('Error al eliminar la imagen:', err);
+                }
+            });
+        }
         const resultado = await recetaService.eliminarReceta(id);
         res.json(resultado);
     } catch (error) {

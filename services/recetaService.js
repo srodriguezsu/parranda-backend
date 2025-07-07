@@ -15,21 +15,21 @@ exports.eliminarReceta = async (id) => {
 };
 
 exports.crearReceta = async (receta, autorId) => {
-    const { titulo, instrucciones } = receta;
+    const { titulo, instrucciones, imagen } = receta;
     const [result] = await pool.query(
-        'INSERT INTO recetas (titulo, instrucciones, autor) VALUES (?, ?, ?)',
-        [titulo, instrucciones, autorId]
+        'INSERT INTO recetas (titulo, instrucciones, autor, imagen_url) VALUES (?, ?, ?, ?)',
+        [titulo, instrucciones, autorId, imagen]
     );
 
     return { id: result.insertId, ...receta };
 }
 
 exports.editarReceta = async (id, receta) => {
-    const { titulo, instrucciones } = receta;
+    const { titulo, instrucciones, imagen } = receta;
 
     const [result] = await pool.query(
-        'UPDATE recetas SET titulo = ?, instrucciones = ? WHERE id = ?',
-        [titulo, instrucciones, id]
+        'UPDATE recetas SET titulo = ?, instrucciones = ?, imagen_url = ? WHERE id = ?',
+        [titulo, instrucciones, imagen, id]
     );
 
     if (result.affectedRows === 0) {
