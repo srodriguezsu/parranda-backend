@@ -2,6 +2,9 @@ const recetaService = require('../services/recetaService');
 const multer = require('multer');
 const path = require('path');
 
+
+// TODO: Add functionality to like a recipe
+
 // Configuración de multer
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
