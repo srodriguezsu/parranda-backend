@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const {login, registro} = require("./controllers/authController");
 const {getAll, update, create, getOne, deleteOne} = require("./controllers/recetaController");
 const {jwtMiddleware} = require("./middlewares/authMiddleware");
@@ -6,6 +7,9 @@ const app = express();
 const port = 3456;
 
 app.use(express.json());
+app.use(cors({
+    origin: ['http://localhost:5173']
+}));
 
 app.get('/', (req, res) => {
     res.send('¡Hola Mundo!');

@@ -1,7 +1,7 @@
 const pool = require('../db');
 
 exports.obtenerRecetas = async () => {
-    const [rows] = await pool.query('SELECT * FROM recetas');
+    const [rows] = await pool.query('SELECT r.*, u.nombre_completo AS nombre_autor FROM recetas r JOIN usuarios u ON u.id = r.autor');
     return rows;
 };
 
