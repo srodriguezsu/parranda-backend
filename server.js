@@ -3,6 +3,7 @@ const cors = require('cors');
 const {login, registro} = require("./controllers/authController");
 const {getAll, update, create, getOne, deleteOne} = require("./controllers/recetaController");
 const {jwtMiddleware} = require("./middlewares/authMiddleware");
+const musicaController = require('./controllers/salonController');
 const app = express();
 const port = 3456;
 
