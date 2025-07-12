@@ -24,7 +24,8 @@ app.put('/recetas/:id', jwtMiddleware, update)
 app.delete('/recetas/:id', jwtMiddleware, deleteOne)
 app.use('/uploads', express.static('uploads'));
 
-// TODO: Like and dislike endpoints
+// Salon endpoints
+app.get('/musica', musicaController.getAll)
 
 
 app.get('/self', jwtMiddleware, (req, res) => {
