@@ -3,7 +3,7 @@ const multer = require('multer');
 const path = require('path');
 
 
-// TODO: Add functionality to like a recipe
+// TODO: Finish the functionality to update the image of a recipe
 
 // Configuración de multer
 const storage = multer.diskStorage({
