@@ -11,9 +11,7 @@ app.use(cors({
     origin: ['http://localhost:5173']
 }));
 
-app.get('/', (req, res) => {
-    res.send('¡Hola Mundo!');
-});
+
 
 app.post('/login', login)
 app.post('/signup', registro)
@@ -25,6 +23,8 @@ app.post('/recetas', jwtMiddleware, create)
 app.put('/recetas/:id', jwtMiddleware, update)
 app.delete('/recetas/:id', jwtMiddleware, deleteOne)
 app.use('/uploads', express.static('uploads'));
+
+// TODO: Like and dislike endpoints
 
 
 app.get('/self', jwtMiddleware, (req, res) => {
