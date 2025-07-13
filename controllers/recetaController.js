@@ -88,9 +88,8 @@ exports.create = async (req, res) => {
 
 // Editar una receta existente
 exports.update = async (req, res) => {
-
     try {
-        upload.single('imagen')(req, res, async function(err) {
+        upload.single('imagen')(req, res, async function (err) {
             if (err instanceof multer.MulterError) {
                 return res.status(400).json({ error: 'Error al subir la imagen' });
             } else if (err) {
@@ -101,28 +100,31 @@ exports.update = async (req, res) => {
             const receta = req.body;
             const autorId = req.user.id;
 
-            // Agregar la ruta de la imagen a la receta si se subió una imagen
-            if (req.file) {
-                receta.imagen = req.file.path;
-            }
-
             try {
                 const existeReceta = await recetaService.obtenerReceta(id);
 
-                if (existeReceta.imagen_url) {
-                    const fs = require('fs');
-                    fs.unlink(existeReceta.imagen_url, (err) => {
-                        if (err) {
-                            console.error('Error al eliminar la imagen anterior:', err);
-                        }
-                    });
+                
+                if (req.file) {
+                    receta.imagen = req.file.path;
+
+                    
+                    if (existeReceta.imagen_url) {
+                        const fs = require('fs');
+                        fs.unlink(existeReceta.imagen_url, (err) => {
+                            if (err) {
+                                console.error('Error al eliminar la imagen anterior:', err);
+                            }
+                        });
+                    }
+                } else {
+                    receta.imagen = existeReceta.imagen_url;
                 }
 
                 const nuevaReceta = await recetaService.editarReceta(id, receta);
                 res.status(201).json(nuevaReceta);
             } catch (error) {
-                console.error('Error al crear receta:', error);
-                res.status(500).json({ error: 'Error al crear la receta' });
+                console.error('Error al actualizar receta:', error);
+                res.status(500).json({ error: 'Error al actualizar la receta' });
             }
         });
     } catch (error) {
@@ -130,6 +132,7 @@ exports.update = async (req, res) => {
         res.status(404).json({ error: error.message });
     }
 };
+
 
 // Eliminar una receta
 exports.deleteOne = async (req, res) => {
