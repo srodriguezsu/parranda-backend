@@ -4,6 +4,7 @@ const {login, registro} = require("./controllers/authController");
 const {getAll, update, create, getOne, deleteOne} = require("./controllers/recetaController");
 const {jwtMiddleware} = require("./middlewares/authMiddleware");
 const musicaController = require('./controllers/salonController');
+const villancicoController = require('./controllers/villancicoController');
 const app = express();
 const port = 3456;
 
@@ -28,11 +29,12 @@ app.use('/uploads', express.static('uploads'));
 // Salon endpoints
 app.get('/musica', musicaController.getAll)
 
+// Villancicos endpoints
+app.get('/villancicos', villancicoController.getAll);
 
 app.get('/self', jwtMiddleware, (req, res) => {
     res.json({ message: 'Ruta protegida, usuario autenticado', user: req.user });
 })
-
 
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
