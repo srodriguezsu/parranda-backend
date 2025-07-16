@@ -154,3 +154,44 @@ exports.deleteOne = async (req, res) => {
         res.status(404).json({ error: error.message });
     }
 };
+
+exports.like = async (req, res) => {
+    const { id } = req.params;
+    const usuarioId = req.user.id;
+
+    try {
+        const receta = await recetaService.likeReceta(id, usuarioId, 1);
+
+
+        res.json({ message: 'Receta marcada como favorita', receta });
+    } catch (error) {
+        if (error.status === 404) {
+            return res.status(404).json({ error: error.message });
+        }
+        if (error.status === 409) {
+            return res.status(409).json({ error: 'Ya has marcado esta receta como favorita' });
+        }
+        console.log(error.message);
+        return res.status(500).json({ error: 'Error al marcar receta como favorita' });
+    }
+}
+
+exports.dislike = async (req, res) => {
+    const { id } = req.params;
+    const usuarioId = req.user.id;
+
+    try {
+        const receta = await recetaService.likeReceta(id, usuarioId, -1);
+        res.json({ message: 'Receta eliminada de favoritos', receta });
+    } catch (error) {
+        if (error.status === 404) {
+            return res.status(404).json({ error: error.message });
+        }
+        if (error.status === 409) {
+            return res.status(409).json({ error: 'No has marcado esta receta como favorita' });
+        }
+        console.log(error.message);
+        return res.status(500).json({ error: 'Error al eliminar receta de favoritos' });
+    }
+}
+

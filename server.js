@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const {login, registro} = require("./controllers/authController");
-const {getAll, update, create, getOne, deleteOne} = require("./controllers/recetaController");
+const recetaController = require("./controllers/recetaController");
 const {jwtMiddleware} = require("./middlewares/authMiddleware");
 const musicaController = require('./controllers/salonController');
 const villancicoController = require('./controllers/villancicoController');
@@ -19,11 +19,13 @@ app.post('/login', login)
 app.post('/signup', registro)
 
 // Recetas endpoints
-app.get('/recetas', getAll)
-app.get('/recetas/:id', getOne)
-app.post('/recetas', jwtMiddleware, create)
-app.put('/recetas/:id', jwtMiddleware, update)
-app.delete('/recetas/:id', jwtMiddleware, deleteOne)
+app.get('/recetas', recetaController.getAll)
+app.get('/recetas/:id', recetaController.getOne)
+app.post('/recetas', jwtMiddleware, recetaController.create)
+app.put('/recetas/:id', jwtMiddleware, recetaController.update)
+app.delete('/recetas/:id', jwtMiddleware, recetaController.deleteOne)
+app.post('/recetas/:id/like', jwtMiddleware, recetaController.like )
+app.post('/recetas/:id/dislike', jwtMiddleware, recetaController.dislike )
 app.use('/uploads', express.static('uploads'));
 
 // Salon endpoints
