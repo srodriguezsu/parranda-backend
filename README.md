@@ -52,10 +52,10 @@ npm install
 
 bash
 # Modo desarrollo con reinicio automático
-npx nodemon server.js
+```npm run dev```
 
 # Modo producción
-node server.js
+```npm run start```
 
 
 El servidor se ejecutará por defecto en [http://localhost:3456](http://localhost:3456)
