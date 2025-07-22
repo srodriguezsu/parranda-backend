@@ -163,9 +163,16 @@ exports.like = async (req, res) => {
 
     try {
         const receta = await recetaService.likeReceta(id, usuarioId, 1);
+        if (receta.mi_like === 1) {
+            return res.json({ message: 'Has dado like a esta receta', receta });
+        } else if (receta.mi_like === -1) {
+            return res.json({ message: 'Has dado dislike a esta receta', receta });
+        } else {
+            return res.json({ message: 'Sin opiniones', receta });
+        }
 
 
-        res.json({ message: 'Receta marcada como favorita', receta });
+
     } catch (error) {
         if (error.status === 404) {
             return res.status(404).json({ error: error.message });

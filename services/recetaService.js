@@ -107,16 +107,16 @@ exports.likeReceta = async (id, usuarioId, value) => {
         return receta;
     }
 
-    if (likeRows[0].value === value) {
+    if (likeRows[0].valor === value) {
         // Si ya existe un like y es con el mismo valor, le indicamos al usuario
-        const error = new Error(`Ya le diste ${tipo} a esta receta`);
-        error.status = 409;
-        throw error;
+        await pool.query('DELETE FROM likes WHERE receta_id = ? AND usuario_id = ?', [id, usuarioId]);
     } else {
         // Si ya existe un like con ese valor
         await pool.query('UPDATE likes SET valor = ? WHERE receta_id = ? AND usuario_id = ?', [value, id, usuarioId]);
-        const [rows] = await pool.query(
-            `
+
+    }
+    const [newRows] = await pool.query(
+        `
             SELECT
                 r.*,
                 (
@@ -133,10 +133,9 @@ exports.likeReceta = async (id, usuarioId, value) => {
             FROM recetas r
             WHERE r.id = ?
         `,
-            [usuarioId, id]
-        );
-        return rows[0];
-    }
+        [usuarioId, id]
+    );
+    return newRows[0];
 }
 
 // TODO: Preguntar Buscar recetas por titulo o autor
