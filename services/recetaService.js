@@ -119,6 +119,7 @@ exports.likeReceta = async (id, usuarioId, value) => {
         `
             SELECT
                 r.*,
+                u.nombre_completo AS nombre_autor,
                 (
                     SELECT COALESCE(l.valor, 0)
                     FROM likes l
@@ -131,10 +132,11 @@ exports.likeReceta = async (id, usuarioId, value) => {
                     WHERE l2.receta_id = r.id
                 ) AS valoracion
             FROM recetas r
+                     JOIN usuarios u ON u.id = r.autor
             WHERE r.id = ?
+            LIMIT 1
         `,
-        [usuarioId, id]
-    );
+        [usuarioId, id]);
     return newRows[0];
 }
 
