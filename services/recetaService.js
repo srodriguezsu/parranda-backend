@@ -104,11 +104,15 @@ exports.likeReceta = async (id, usuarioId, value) => {
         await pool.query('INSERT INTO likes (receta_id, usuario_id, valor) VALUES (?, ?, ?)', [id, usuarioId, value]);
     }
 
+
+    console.log(likeRows[0]?.valor, " ", value)
     if (likeRows[0]?.valor === value) {
         // Si ya existe un like y es con el mismo valor, le indicamos al usuario
         await pool.query('DELETE FROM likes WHERE receta_id = ? AND usuario_id = ?', [id, usuarioId]);
+
     } else {
         // Si ya existe un like con ese valor
+
         await pool.query('UPDATE likes SET valor = ? WHERE receta_id = ? AND usuario_id = ?', [value, id, usuarioId]);
 
     }
