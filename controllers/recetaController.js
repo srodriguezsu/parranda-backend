@@ -172,13 +172,6 @@ exports.like = async (req, res) => {
 
 
     } catch (error) {
-        if (error.status === 404) {
-            return res.status(404).json({ error: error.message });
-        }
-        if (error.status === 409) {
-            return res.status(409).json({ error: 'Ya has marcado esta receta como favorita' });
-        }
-        console.log(error.message);
         return res.status(500).json({ error: 'Error al marcar receta como favorita' });
     }
 }
@@ -195,13 +188,6 @@ exports.dislike = async (req, res) => {
             return res.json({ message: 'Sin opiniones', receta });
         }
     } catch (error) {
-        if (error.status === 404) {
-            return res.status(404).json({ error: error.message });
-        }
-        if (error.status === 409) {
-            return res.status(409).json({ error: 'No has marcado esta receta como favorita' });
-        }
-        console.log(error.message);
         return res.status(500).json({ error: 'Error al eliminar receta de favoritos' });
     }
 }
