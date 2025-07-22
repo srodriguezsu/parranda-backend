@@ -27,7 +27,6 @@ exports.optionalJwtMiddleware = (req, res, next) => {
         req.user = verify(token, process.env.JWT_SECRET); // Guardar la información del usuario decodificada en el request
         next();
     } catch (error) {
-        console.error('Error al verificar el token:', error);
         next();
     }
 }
