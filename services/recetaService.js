@@ -35,8 +35,7 @@ exports.crearReceta = async (receta, autorId) => {
         'INSERT INTO recetas (titulo, instrucciones, autor, imagen_url) VALUES (?, ?, ?, ?)',
         [titulo, instrucciones, autorId, imagen]
     );
-
-    return { id: result.insertId, ...receta };
+    return await this.obtenerReceta(result.insertId, autorId);
 }
 
 exports.editarReceta = async (id, receta) => {
