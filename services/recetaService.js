@@ -64,7 +64,7 @@ exports.obtenerReceta = async (id) => {
             FROM recetas r
                      JOIN usuarios u ON u.id = r.autor
                      LEFT JOIN likes l ON r.id = l.receta_id
-            WHERE r.id = 18
+            WHERE r.id = ?
             GROUP BY r.id
             ORDER BY r.fecha_creacion DESC;
 
