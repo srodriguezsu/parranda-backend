@@ -35,7 +35,8 @@ const upload = multer({
 // Obtener todas las recetas
 exports.getAll = async (req, res) => {
     try {
-        const recetas = await recetaService.obtenerRecetas();
+        const viewerId = req.user?.id;
+        const recetas = await recetaService.obtenerRecetas(viewerId);
         res.json(recetas);
     } catch (error) {
         console.error('Error al obtener recetas:', error);
@@ -48,7 +49,8 @@ exports.getOne = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const receta = await recetaService.obtenerReceta(id);
+        const viewerId = req.user?.id;
+        const receta = await recetaService.obtenerReceta(id, viewerId);
         res.json(receta);
     } catch (error) {
         res.status(404).json({ error: error.message });

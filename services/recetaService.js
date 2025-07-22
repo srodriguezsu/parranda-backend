@@ -1,22 +1,24 @@
 const pool = require('../db');
 
-exports.obtenerRecetas = async () => {
+exports.obtenerRecetas = async (viewerId) => {
     const [rows] = await pool.query(
         `
             SELECT
                 r.*,
                 u.nombre_completo AS nombre_autor,
-                ROUND((1.0 * SUM(CASE WHEN l.valor = 1 THEN 1 ELSE 0 END) / COUNT(l.valor)) * 5, 1) AS valoracion
+                ROUND((1.0 * SUM(CASE WHEN l.valor = 1 THEN 1 ELSE 0 END) / COUNT(l.valor)) * 5, 1) AS valoracion,
+                COALESCE(MAX(CASE WHEN l.usuario_id = ? THEN l.valor END), 0) AS mi_like
             FROM recetas r
                      LEFT JOIN likes l ON r.id = l.receta_id
                      JOIN usuarios u ON u.id = r.autor
             GROUP BY r.id
             ORDER BY r.fecha_creacion DESC;
-
-        `
+        `,
+        [viewerId]
     );
     return rows;
 };
+
 
 exports.eliminarReceta = async (id) => {
     const [result] = await pool.query('DELETE FROM recetas WHERE id = ?', [id]);
@@ -54,29 +56,31 @@ exports.editarReceta = async (id, receta) => {
 
 
 
-exports.obtenerReceta = async (id) => {
+exports.obtenerReceta = async (id, viewerId) => {
     const [rows] = await pool.query(
         `
             SELECT
                 r.*,
                 u.nombre_completo AS nombre_autor,
-                ROUND((1.0 * SUM(CASE WHEN l.valor = 1 THEN 1 ELSE 0 END) / COUNT(l.valor)) * 5, 1) AS valoracion
+                ROUND((1.0 * SUM(CASE WHEN l.valor = 1 THEN 1 ELSE 0 END) / COUNT(l.valor)) * 5, 1) AS valoracion,
+                COALESCE(MAX(CASE WHEN l.usuario_id = ? THEN l.valor END), 0) AS mi_like
             FROM recetas r
                      JOIN usuarios u ON u.id = r.autor
                      LEFT JOIN likes l ON r.id = l.receta_id
             WHERE r.id = ?
             GROUP BY r.id
             ORDER BY r.fecha_creacion DESC;
-
-        `
-        , [id]);
+        `,
+        [viewerId, id]
+    );
 
     if (rows.length === 0) {
         throw new Error('Receta no encontrada');
     }
 
     return rows[0];
-}
+};
+
 
 exports.likeReceta = async (id, usuarioId, value) => {
     if (value !== 1 && value !== -1) {
@@ -111,7 +115,27 @@ exports.likeReceta = async (id, usuarioId, value) => {
     } else {
         // Si ya existe un like con ese valor
         await pool.query('UPDATE likes SET valor = ? WHERE receta_id = ? AND usuario_id = ?', [value, id, usuarioId]);
-        return receta;
+        const [rows] = await pool.query(
+            `
+            SELECT
+                r.*,
+                (
+                    SELECT COALESCE(l.valor, 0)
+                    FROM likes l
+                    WHERE l.receta_id = r.id AND l.usuario_id = ?
+                    LIMIT 1
+                ) AS mi_like,
+                (
+                    SELECT ROUND((1.0 * SUM(CASE WHEN l2.valor = 1 THEN 1 ELSE 0 END) / COUNT(l2.valor)) * 5, 1)
+                    FROM likes l2
+                    WHERE l2.receta_id = r.id
+                ) AS valoracion
+            FROM recetas r
+            WHERE r.id = ?
+        `,
+            [usuarioId, id]
+        );
+        return rows[0];
     }
 }
 

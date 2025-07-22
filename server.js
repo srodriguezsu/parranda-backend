@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const {login, registro} = require("./controllers/authController");
 const recetaController = require("./controllers/recetaController");
-const {jwtMiddleware} = require("./middlewares/authMiddleware");
+const {jwtMiddleware, optionalJwtMiddleware} = require("./middlewares/authMiddleware");
 const musicaController = require('./controllers/salonController');
 const villancicoController = require('./controllers/villancicoController');
 const app = express();
@@ -19,8 +19,8 @@ app.post('/login', login)
 app.post('/signup', registro)
 
 // Recetas endpoints
-app.get('/recetas', recetaController.getAll)
-app.get('/recetas/:id', recetaController.getOne)
+app.get('/recetas', optionalJwtMiddleware, recetaController.getAll)
+app.get('/recetas/:id', optionalJwtMiddleware, recetaController.getOne)
 app.post('/recetas', jwtMiddleware, recetaController.create)
 app.put('/recetas/:id', jwtMiddleware, recetaController.update)
 app.delete('/recetas/:id', jwtMiddleware, recetaController.deleteOne)
