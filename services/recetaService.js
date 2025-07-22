@@ -98,16 +98,13 @@ exports.likeReceta = async (id, usuarioId, value) => {
 
     const receta = rows[0];
     const [likeRows] = await pool.query('SELECT * FROM likes WHERE receta_id = ? AND usuario_id = ?', [id, usuarioId]);
-    const tipo = value === 1 ? 'Me gusta' : 'No me gusta';
 
     if (likeRows.length === 0) {
         // Si no existe, lo creamos
         await pool.query('INSERT INTO likes (receta_id, usuario_id, valor) VALUES (?, ?, ?)', [id, usuarioId, value]);
-
-        return receta;
     }
 
-    if (likeRows[0].valor === value) {
+    if (likeRows[0]?.valor === value) {
         // Si ya existe un like y es con el mismo valor, le indicamos al usuario
         await pool.query('DELETE FROM likes WHERE receta_id = ? AND usuario_id = ?', [id, usuarioId]);
     } else {
@@ -129,7 +126,7 @@ exports.likeReceta = async (id, usuarioId, value) => {
                 (
                     SELECT ROUND((1.0 * SUM(CASE WHEN l2.valor = 1 THEN 1 ELSE 0 END) / COUNT(l2.valor)) * 5, 1)
                     FROM likes l2
-                    WHERE l2.receta_id = r.id
+                    WHERE l2.receta_id = r.id   
                 ) AS valoracion
             FROM recetas r
                      JOIN usuarios u ON u.id = r.autor

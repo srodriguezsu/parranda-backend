@@ -165,8 +165,6 @@ exports.like = async (req, res) => {
         const receta = await recetaService.likeReceta(id, usuarioId, 1);
         if (receta.mi_like === 1) {
             return res.json({ message: 'Te gustó esta receta', receta });
-        } else if (receta.mi_like === -1) {
-            return res.json({ message: 'No te gustó esta receta', receta });
         } else {
             return res.json({ message: 'Sin opiniones', receta });
         }
@@ -191,7 +189,11 @@ exports.dislike = async (req, res) => {
 
     try {
         const receta = await recetaService.likeReceta(id, usuarioId, -1);
-        res.json({ message: 'Receta eliminada de favoritos', receta });
+        if (receta.mi_like === -1) {
+            return res.json({ message: 'No te gustó esta receta', receta });
+        } else  {
+            return res.json({ message: 'Sin opiniones', receta });
+        }
     } catch (error) {
         if (error.status === 404) {
             return res.status(404).json({ error: error.message });
